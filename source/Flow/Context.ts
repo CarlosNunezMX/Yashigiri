@@ -8,8 +8,9 @@ export enum Kind {
 }
 
 export class Context {
-    MessageContext: WAMessage;
-    AppContext: WASocket;
+    private MessageContext: WAMessage;
+    private AppContext: WASocket;
+    
     phoneNumber: string;
     body: string;
     SenderInfo: proto.Message.IContactMessage;
