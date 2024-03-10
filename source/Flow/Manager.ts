@@ -14,8 +14,15 @@ export class Manager {
     private BlackList?: BlackList;
     private WhiteList?: WhiteList;
 
+    private ContextReference: typeof Context = Context;
+
     useBlackList = (bl: BlackList) => {
         this.BlackList = bl;
+        return this;
+    }
+
+    useContext(newContext: typeof Context){
+        this.ContextReference = newContext;
     }
 
     private events: Array<string | WAMessageEvent> = [];
@@ -25,12 +32,16 @@ export class Manager {
         return this.events.some(ev => ev === event) || !Message.key.participant;
     }
     useEventDisbler = (events: WAMessageEvent[] | WAMessageEvent | string[] | string) => {
-        if (!Array.isArray(events))
-            return this.events.push(events)
+        if (!Array.isArray(events)) {
+            this.events.push(events)
+            return this;
+        }
         this.events = this.events.concat(events);
+        return this;
     }
     useWhiteList = (wl: WhiteList) => {
         this.WhiteList = wl;
+        return this;
     }
 
     SocketConnection: WASocket | undefined;
@@ -44,6 +55,10 @@ export class Manager {
         const flow = this.Flows.get(jid);
         if (!flow)
             return false;
+        if (flow.nextFlow) {
+            this.Flows.set(jid, flow.nextFlow);
+            return true;
+        }
         if (!flow.getNext())
             return this.Flows.delete(jid)
         return false;
@@ -53,9 +68,11 @@ export class Manager {
     private AreWeWaiting: boolean = false;
     addFlow = (flow: Flow | Flow[]) => {
         if (Array.isArray(flow)) {
-            return flow.forEach(f => this.Analyzer.addFlow(f));
+            flow.forEach(f => this.Analyzer.addFlow(f));
+            return this;
         }
         this.Analyzer.addFlow(flow);
+        return this;
     }
 
     sendToFlow = (flow: Flow, jid: string) => {
@@ -64,7 +81,6 @@ export class Manager {
 
     FlowNotFountMessage: string = "";
     private getMessage = async (context: BaileysEventMap["messages.upsert"]) => {
-        console.log(this.SocketConnection?.user?.name);
         const cellPhone = context.messages[0].key.remoteJid!;
         const message = context.messages[0].message?.extendedTextMessage?.text! || context.messages[0].message?.conversation!;
         if (!this.someEvent(context.messages[0]))
@@ -102,10 +118,9 @@ export class Manager {
 
 
     // TODO: implement what to do when flow gets on its end.
-    FlowQueue = async (flow: Flow, context: BaileysEventMap["messages.upsert"]): Promise<void> => {
+    private FlowQueue = async (flow: Flow, context: BaileysEventMap["messages.upsert"]): Promise<void> => {
         const CurrentAnswer = flow.getCurrentAnswer();
         const jid = context.messages[0].key.remoteJid!;
-        console.log(CurrentAnswer);
 
         if (typeof CurrentAnswer === "string") {
             this.SocketConnection?.sendMessage(jid, {
@@ -116,8 +131,6 @@ export class Manager {
             flow.CurrentAnswer++;
             return this.FlowQueue.bind(this)(flow, context);
         } else if ((CurrentAnswer as AnswerConstructor).prototype && (CurrentAnswer as AnswerConstructor).prototype instanceof Answer) {
-            console.log("Sending an function");
-
             const nanswer = new (CurrentAnswer as AnswerConstructor)();
             // here is the logic to the context messages
             if (nanswer.waitForAnswer && !this.AreWeWaiting) {
@@ -126,8 +139,11 @@ export class Manager {
             }
 
             if (nanswer.waitForAnswer && this.AreWeWaiting) {
-                // @ts-ignore
-                const response = nanswer.handler(new Context(context.messages[0], this.SocketConnection));
+                const response = nanswer.handler(new this.ContextReference(
+                    context.messages[0], 
+                    // @ts-ignore
+                    this.SocketConnection
+                ));
                 if (response instanceof Promise) {
                     return response.then(() => {
                         this.AreWeWaiting = false;
@@ -146,8 +162,11 @@ export class Manager {
             }
 
             if (!nanswer.waitForAnswer) {
-                // @ts-ignore
-                const response = nanswer.handler(new Context(context.messages[0], this.SocketConnection));
+                const response = nanswer.handler(new this.ContextReference(
+                    context.messages[0], 
+                    // @ts-ignore
+                    this.SocketConnection
+                ));
                 if (response instanceof Promise) {
                     await response.then()
                 }
@@ -173,7 +192,7 @@ export class Manager {
     public useMemo = <MemoType>(jid: string, key: string, value?: MemoType): MemoType => {
         let _memo = this.Memo.get(jid);
         console.log(`Setting a variable ${key} for ${jid} with the value ${value}`);
-        
+
         if (!_memo)
             _memo = new Map()
         const val = _memo.get(key);
@@ -214,8 +233,6 @@ export class Manager {
         }))
 
         toReplaced.forEach(replace => {
-            console.log(this.Memo.get(jid));
-            
             let Data = this.Memo.get(jid)?.get(replace.token) ?? 'Indefinido';
             message = message.replace(replace.original, Data);
         })

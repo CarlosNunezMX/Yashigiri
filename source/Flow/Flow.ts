@@ -2,7 +2,7 @@ import type { AnyMessageContent, BaileysEventMap, WASocket, WAMessage, proto } f
 import type { Context } from "./Context.js";
 
 export abstract class Answer {
-  handler(ctx: Context): void | Promise<void> { };
+  handler<ContextType = Context>(ctx: ContextType): void | Promise<void> { };
   waitForAnswer: boolean = false;
 }
 
@@ -34,6 +34,7 @@ export class Flow {
   getNext(): (typeof Answer | string | AnyMessageContent) | undefined{
     return this.Answers[this.CurrentAnswer + 1];
   }
+  nextFlow?: Flow;
   /**
    * 
    * @param keyboard This paramether will define how the message will be proccesed.
@@ -45,6 +46,7 @@ export class Flow {
       this.Keyboards.push(keyboard.toLowerCase());
       return this;
     }
+
     
     if( Array.isArray(keyboard as string[]) ){
       this.Keyboards = this.Keyboards.concat(keyboard);
@@ -74,6 +76,16 @@ export class Flow {
     if (!Array.isArray(answer))
       this.Answers.push(answer);
     else this.Answers = this.Answers.concat(answer);
+    return this;
+  }
+  
+  /**
+   * 
+   * @param flow The flow what you want to be the next when this finishes.
+   * > **UNTESTED!** - Don't use it under production enviroment!
+   */
+  setNextFlow(flow: Flow){
+    this.nextFlow = flow;
     return this;
   }
 };
