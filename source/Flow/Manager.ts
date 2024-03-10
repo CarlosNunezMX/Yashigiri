@@ -13,20 +13,26 @@ export type WAMessageEvent = (keyof proto.IWebMessageInfo);
 export class Manager {
     private BlackList?: BlackList;
     private WhiteList?: WhiteList;
+    private delay: number = 1000;
 
+    setDelay(ms: number){
+        this.delay = ms;
+    }
+
+    
     private ContextReference: typeof Context = Context;
-
+    
     useBlackList = (bl: BlackList) => {
         this.BlackList = bl;
         return this;
     }
-
-    useContext(newContext: typeof Context){
+    
+    useContext(newContext: typeof Context) {
         this.ContextReference = newContext;
     }
-
+    
     private events: Array<string | WAMessageEvent> = [];
-
+    
     private someEvent(Message: proto.IWebMessageInfo) {
         const [event] = Object.keys(Message)[0];
         return this.events.some(ev => ev === event) || !Message.key.participant;
@@ -43,24 +49,60 @@ export class Manager {
         this.WhiteList = wl;
         return this;
     }
-
+    
+    private haveReset = (jid: string, context: BaileysEventMap["messages.upsert"]) => {
+        const flow = this.Flows.get(jid)!;
+        const haveNext = flow.getNext();
+        
+        if(!haveNext){
+            if(!flow.nextFlow)  
+            return this.Flows.delete(jid);
+        this.Flows.set(jid, flow.nextFlow.copy());
+        return this.FlowQueue(context);
+    }
+    
+    flow.CurrentAnswer++;
+        this.FlowQueue(context);
+        
+    }
+    moveToStep = (jid: string, step: number) => {
+        const flow = this.Flows.get(jid)!
+        flow.skipToStep(step);
+        this.Flows.set(jid, flow);
+    }
     SocketConnection: WASocket | undefined;
     private Flows: Map<string, Flow> = new Map();
     public attach = (whatsapp_context: WASocket) => {
         this.SocketConnection = whatsapp_context;
         this.SocketConnection.ev.on('messages.upsert', this.getMessage.bind(this));
     }
-
+    private async _delay(ms: number): Promise<void>{
+        return new Promise((res, rej) => {
+            setTimeout(() => res(), ms);
+        })
+    }
+    private async useDelay(jid: string){
+        await this.SocketConnection?.sendPresenceUpdate("composing", jid);
+        await this._delay(this.delay);
+        await this.SocketConnection?.sendPresenceUpdate('available', jid)
+    }
     private reset = (jid: string) => {
         const flow = this.Flows.get(jid);
+        console.log("Check if reset...");
+        
         if (!flow)
-            return false;
+        return false;
+    
+    if (!flow.getNext()) {
+        console.log("Going to next flow");
+        
         if (flow.nextFlow) {
-            this.Flows.set(jid, flow.nextFlow);
-            return true;
+            flow.nextFlow.CurrentAnswer = -1;
+            return this.Flows.set(jid, flow.nextFlow);
         }
-        if (!flow.getNext())
-            return this.Flows.delete(jid)
+        this.Flows.delete(jid)
+        return false;
+    }
         return false;
     }
     private Memo: Map<string, Map<string, any>> = new Map();
@@ -112,25 +154,27 @@ export class Manager {
             // @ts-ignore
             flow = this.Flows.get(cellPhone);
         }
-        await this.FlowQueue(flow, context);
+        await this.FlowQueue(context);
 
     }
 
 
     // TODO: implement what to do when flow gets on its end.
-    private FlowQueue = async (flow: Flow, context: BaileysEventMap["messages.upsert"]): Promise<void> => {
-        const CurrentAnswer = flow.getCurrentAnswer();
+    private FlowQueue = async (context: BaileysEventMap["messages.upsert"]): Promise<void> => {
         const jid = context.messages[0].key.remoteJid!;
+        const flow = this.Flows.get(jid)!;
+        const CurrentAnswer = flow.getCurrentAnswer();
 
         if (typeof CurrentAnswer === "string") {
+            console.log('Answer is of string type.');
+            await this.useDelay(jid)
             this.SocketConnection?.sendMessage(jid, {
                 text: this.useMemoText(jid, CurrentAnswer)
             });
-            if (this.reset(jid))
-                return;
-            flow.CurrentAnswer++;
-            return this.FlowQueue.bind(this)(flow, context);
+            this.haveReset(jid, context);
         } else if ((CurrentAnswer as AnswerConstructor).prototype && (CurrentAnswer as AnswerConstructor).prototype instanceof Answer) {
+            console.log("Answer is AnswerAPI like");
+            
             const nanswer = new (CurrentAnswer as AnswerConstructor)();
             // here is the logic to the context messages
             if (nanswer.waitForAnswer && !this.AreWeWaiting) {
@@ -140,51 +184,45 @@ export class Manager {
 
             if (nanswer.waitForAnswer && this.AreWeWaiting) {
                 const response = nanswer.handler(new this.ContextReference(
-                    context.messages[0], 
+                    context.messages[0],
                     // @ts-ignore
-                    this.SocketConnection
+                    this.SocketConnection,
+
+                    flow
                 ));
                 if (response instanceof Promise) {
                     return response.then(() => {
                         this.AreWeWaiting = false;
-                        if (this.reset(jid))
-                            return;
-                        flow.CurrentAnswer++;
-                        return this.FlowQueue.bind(this)(flow, context);
+                        this.haveReset(jid, context);
                     })
                 }
 
                 this.AreWeWaiting = false;
-                flow.CurrentAnswer++;
-                if (this.reset(jid))
-                    return;
-                return this.FlowQueue.bind(this)(flow, context);
+                this.haveReset(jid, context);
             }
 
             if (!nanswer.waitForAnswer) {
                 const response = nanswer.handler(new this.ContextReference(
-                    context.messages[0], 
+                    context.messages[0],
                     // @ts-ignore
-                    this.SocketConnection
+                    this.SocketConnection,
+
+                    flow
                 ));
                 if (response instanceof Promise) {
                     await response.then()
                 }
 
-                if (this.reset(jid))
-                    return;
-                flow.CurrentAnswer++;
-                return this.FlowQueue.bind(this)(flow, context);
+                this.haveReset(jid, context);
             }
 
         }
 
         if (typeof CurrentAnswer === "object") {
+            console.log("Answer is Baileys-Like");
+            await this.useDelay(jid)
             this.SocketConnection?.sendMessage(jid, CurrentAnswer as AnyMessageContent)
-            if (this.reset(jid))
-                return;
-            flow.CurrentAnswer++;
-            return this.FlowQueue.bind(this)(flow, context);
+            this.haveReset(jid, context);
         }
 
     }

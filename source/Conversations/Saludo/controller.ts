@@ -1,16 +1,17 @@
 import { Kind, type Context } from "../../Flow/Context.js";
 import { Answer } from "../../Flow/Flow.js";
 
-export class Saludo extends Answer<Context> {
+export class Saludo extends Answer {
     waitForAnswer: boolean = true;
-    constructor(){
+    constructor() {
         super();
     }
 
-    async handler(ctx: Context): Promise<void> {  
+    async handler(ctx: Context): Promise<void> {
         ctx.useMemo(ctx.phoneNumber, 'name', ctx.body)
+
         await ctx.delayWithPresence('composing', 1)
-        await ctx.reply(ctx.MemoText(ctx.phoneNumber, 'Holaaaa {name}!'));
+        await ctx.reply(ctx.MemoText(ctx.phoneNumber, 'Hola {name}!'));
         return;
     }
 }

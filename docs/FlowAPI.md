@@ -45,8 +45,21 @@ We've three ways to answer in our flows.
 GreetFlow.addAnswer("Hello, how are you!");
 // Using the answer api
 GreetFlow.addAnswer(MyGreatAnswerHere)
-// Use an array for answering, it is the same using answerapi
+// Use an array for answering, it is the same using answerapi and AnyMessageContent
 GreetFlow.addAnswer(["Oh, are you {feel}", "I hope that was a good answer"]);
+// Using AnyMessageContent(BaileysAPI)
+GreetFlow.addAnswer({
+    text: "What are you doing?"
+});
+```
+
+#### Using helpers
+We've some helpers to build answers, the first one is `OneLineAnswer`.
+```ts
+GreetFlow.addAnswer(OneLineAnswer(["Hello, I'm botsitotester!", "How can I help you?"]))
+/// It will translate to:
+/// Hello, I'm botsitotester!
+/// How can I help you
 ```
 
 ### Adding next flow.

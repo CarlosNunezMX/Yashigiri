@@ -10,14 +10,16 @@ export enum Kind {
 export class Context {
     protected MessageContext: WAMessage;
     protected AppContext: WASocket;
+    protected FlowContext: Flow;
 
     phoneNumber: string;
     body: string;
     SenderInfo: proto.Message.IContactMessage;
     sendOtherContact: (jid: string, content: AnyMessageContent, options?: MiscMessageGenerationOptions | undefined) => Promise<proto.WebMessageInfo | undefined>;
 
+    moveToStep: (jid: string, step: number) => void;
 
-    constructor(messageContext: WAMessage, socket: WASocket) {
+    constructor(messageContext: WAMessage, socket: WASocket, flowContext: Flow) {
         if (!socket)
             throw 'You could not use this class if the socket is not loaded!'
         // @ts-ignore
@@ -27,16 +29,18 @@ export class Context {
         this.phoneNumber = messageContext.key.remoteJid!;
         this.body = messageContext.message?.extendedTextMessage?.text! || messageContext.message?.conversation!;
         this.SenderInfo = this.MessageContext.message?.contactMessage!;
+        this.FlowContext = flowContext;
+        this.moveToStep = Manager.getInstance().moveToStep;
     }
 
-    MemoText = Manager.getInstance().useMemoText.bind(Manager.getInstance());
+    MemoText = Manager.getInstance().useMemoText;
 
     moveToFlow = (flow: Flow) => {
         Manager.getInstance().sendToFlow(flow, this.MessageContext.key.remoteJid!);
     }
 
     delay(time: number, kind?: Kind) {
-        return new Promise(res => {
+        return new Promise((res, rej) => {
             setTimeout(e => res(e), (() => {
                 if (!kind)
                     return time * 1000;
@@ -48,7 +52,7 @@ export class Context {
         })
     }
 
-    useMemo = Manager.getInstance().useMemo.bind(Manager.getInstance());
+    useMemo = Manager.getInstance().useMemo;
 
     delayWithPresence = async (presence: WAPresence = 'composing', time: number, kind?: Kind) => {
         await this.AppContext.sendPresenceUpdate(presence, this.MessageContext.key.remoteJid!)

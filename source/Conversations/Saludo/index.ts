@@ -1,4 +1,5 @@
 import { Flow } from "../../Flow/Flow.js";
+import { MenuFlow } from "../Menu/index.js";
 import { Saludo } from "./controller.js";
 
 export const FlowSaludo = new Flow()
@@ -11,8 +12,7 @@ export const FlowSaludo = new Flow()
     .addKeyboard('alguien ahi')
     .addAnswer('Hola, cual es tu nombre?')
     .addAnswer(Saludo)
-    .addAnswer({
-        text: "Adios"
-    });
+    .addAnswer("Será redirigido al menú...")
+    .setNextFlow(MenuFlow)
 
 FlowSaludo.flowName = "Saludo"

@@ -70,6 +70,11 @@ This function makes you exit from the current flow and go to another
     ctx.moveToFlow(myNewBrandFlow);
 ```
 
+### moveToStep
+Back or skip steps when you need.
+```ts
+ctx.moveToStep(ctx.phoneNumber, 0);
+```
 
 ## Variables
 + `SenderInfo: proto.Message.IContactMessage` - Gives you the basic info about your sender.

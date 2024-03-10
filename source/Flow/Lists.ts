@@ -1,6 +1,6 @@
 class Lists{
     protected Lists: string[] = [];
-    addToList(jid: string | string[]){
+    add(jid: string | string[]){
         if(Array.isArray(jid))
             return this.Lists = this.Lists.concat(jid);
         this.Lists.push(jid);
