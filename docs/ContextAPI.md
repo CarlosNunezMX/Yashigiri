@@ -1,5 +1,8 @@
 # Context API
-## Reply & Send
+## Methods
+Use as you like 😉
+
+### Reply & Send
 Quick Reply for a message using a simple string or a message of baileys
 ```ts
     ctx.send(message: string = "Hello World!");
@@ -7,7 +10,7 @@ Quick Reply for a message using a simple string or a message of baileys
         text: "Hello World!"
     });
 ```
-## sendOtherContact
+### sendOtherContact
 Same up but with jid field
 ```ts
     ctx.sendOtherContect(
@@ -15,7 +18,7 @@ Same up but with jid field
         message: string | AnyMessageContent = "Hola Mundo"
     );
 ```
-## useMemo
+### useMemo
 Make easy to use a RAM based memory for your chats, it supports multi-flow
 
 + **Example**
@@ -27,7 +30,7 @@ Make easy to use a RAM based memory for your chats, it supports multi-flow
         ctx.useMemo<MemoType>(jid: string, key: string, value: MemoType): MemoType
     ```
 
-## MemoText
+### MemoText
 Process and fill with your memos easily.
 + **Exmaple**
     ```js
@@ -39,7 +42,7 @@ Process and fill with your memos easily.
     ```
 This API requires your text formatted with the following format `{variable}` and it will convert it to the memo, if you haven't one you'll recive `Indefinido`.
 
-## delay/delayWithPresence
+### delay/delayWithPresence
 Those functions are delayers, one is a simple delayer, and the second gives you the opportunity to change the state from `available` to another one
 + **Example**
     ```js
@@ -52,13 +55,13 @@ Those functions are delayers, one is a simple delayer, and the second gives you 
         ctx.delay(time: number, kind: Kind): Promise<void>;
         ctx.delay(presence: WAPresence, time: number, kind: Kind): Promise<void>
     ```
-## setPresence
+### setPresence
 This function gives you the posibility to change your presence on whatsapp for a chat.
 
 ```ts
     await ctx.setPresence(presence: WAPresence | 'composing');
 ```
-## moveToFlow
+### moveToFlow
 > UNTESTEST - Dont use in production!
 This function makes you exit from the current flow and go to another
 ```js
@@ -102,7 +105,7 @@ class GreatAnswer extends Answer<CustomAndCoolContext>  {
     // more code here
 }
 ```
-### Attach to the Manager
+## Attach to the Manager
 You have your amazing context class made, so you need to attach to the manager for use it. Here is an example
 ```ts
 const manager = Manager.getInstance();
