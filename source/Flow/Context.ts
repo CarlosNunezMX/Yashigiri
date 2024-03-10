@@ -8,8 +8,8 @@ export enum Kind {
 }
 
 export class Context {
-    private MessageContext: WAMessage;
-    private AppContext: WASocket;
+    protected MessageContext: WAMessage;
+    protected AppContext: WASocket;
 
     phoneNumber: string;
     body: string;

@@ -1,7 +1,7 @@
 import { Kind, type Context } from "../../Flow/Context.js";
 import { Answer } from "../../Flow/Flow.js";
 
-export class Saludo extends Answer {
+export class Saludo extends Answer<Context> {
     waitForAnswer: boolean = true;
     constructor(){
         super();

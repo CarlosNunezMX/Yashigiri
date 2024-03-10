@@ -72,3 +72,39 @@ This function makes you exit from the current flow and go to another
 + `SenderInfo: proto.Message.IContactMessage` - Gives you the basic info about your sender.
 + `body: string` - Gives you the message text body.
 + `phoneNumber: string` - Gives you the phone number(jid) of your sender.
+
+## Context Extensions
+Well, if you want to access to new features inside your context, you could extend the context class and give it to manager 🤓.
+Here an example: 
+
+```ts
+class CustomAndCoolContext extends Context {
+    constructor(messageContext: WAMessage, socket: WASocket){
+        super(messageContext, socket);
+    }
+
+    useDatabase(){
+        // Some code here.
+    }
+}
+```
+
+You have the context from the Socket in `AppContext` and the Message Context in `MessageContext` who are protected attributes.
+
+### Handler Usage
+```ts
+class GreatAnswer extends Answer<CustomAndCoolContext>  {
+    handler(ctx: CustomAndCoolContext){
+        ctx.useDatabase();
+        /*** awesome code here **/
+    }
+
+    // more code here
+}
+```
+### Attach to the Manager
+You have your amazing context class made, so you need to attach to the manager for use it. Here is an example
+```ts
+const manager = Manager.getInstance();
+manager.useContext(CustomAndCoolContext);
+```
