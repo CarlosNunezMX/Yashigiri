@@ -60,7 +60,6 @@ const MyAwesomeOtherFlow = new Flow();
 MyAwesomeFlow.setNextFlow(MyAwesomeOtherFlow);
 ```
 
-
 ## Attach to Manager
 When you've finished your ideal flow, you have need to add it to the Manager, so the method is `Manager->addFlow(flow);`. Here is an example
 ```ts
