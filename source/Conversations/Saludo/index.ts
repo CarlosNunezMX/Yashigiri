@@ -9,7 +9,6 @@ export const FlowSaludo = new Flow()
         mode: 'equals',
         sensitive: false
     })
-    .addKeyboard('alguien ahi')
     .addAnswer('Hola, cual es tu nombre?')
     .addAnswer(Saludo)
     .addAnswer("Será redirigido al menú...")
