@@ -10,13 +10,13 @@ export enum Kind {
 export class Context {
     private MessageContext: WAMessage;
     private AppContext: WASocket;
-    
+
     phoneNumber: string;
     body: string;
     SenderInfo: proto.Message.IContactMessage;
     sendOtherContact: (jid: string, content: AnyMessageContent, options?: MiscMessageGenerationOptions | undefined) => Promise<proto.WebMessageInfo | undefined>;
-    
-    
+
+
     constructor(messageContext: WAMessage, socket: WASocket) {
         if (!socket)
             throw 'You could not use this class if the socket is not loaded!'
@@ -38,11 +38,12 @@ export class Context {
     delay(time: number, kind?: Kind) {
         return new Promise(res => {
             setTimeout(e => res(e), (() => {
-                if (kind && kind == Kind.MINUTES)
-                    return time * 60 * 1000;
-                if (kind && kind == Kind.SECONDS)
+                if (!kind)
                     return time * 1000;
-                return time * 1000;
+                if (kind == Kind.MINUTES)
+                    return time * 60 * 1000;
+                if (kind == Kind.SECONDS)
+                    return time * 1000;
             })());
         })
     }
@@ -50,10 +51,8 @@ export class Context {
     useMemo = Manager.getInstance().useMemo.bind(Manager.getInstance());
 
     delayWithPresence = async (presence: WAPresence = 'composing', time: number, kind?: Kind) => {
-        console.log("Delaying");
         await this.AppContext.sendPresenceUpdate(presence, this.MessageContext.key.remoteJid!)
         await this.delay(time, kind);
-        console.log("Delayed");
         await this.AppContext.sendPresenceUpdate('available', this.MessageContext.key.remoteJid!);
     }
 
@@ -61,15 +60,13 @@ export class Context {
         await this.AppContext.sendPresenceUpdate(presence, this.MessageContext.key.remoteJid!);
     }
     send = (message: string | AnyMessageContent) => {
-        console.log("sending...");
-        
         if (typeof message === "string")
             return this.AppContext.sendMessage(this.MessageContext.key.remoteJid!, { text: message });
         else return this.AppContext.sendMessage(this.MessageContext.key.remoteJid!, { ...message });
     }
     reply = (message: string | AnyMessageContent): Promise<proto.WebMessageInfo | undefined> => {
         if (typeof message === "string")
-            return this.AppContext.sendMessage(this.MessageContext.key.remoteJid!, { text: message, forward: this.MessageContext });
-        else return this.AppContext.sendMessage(this.MessageContext.key.remoteJid!, { ...message, forward: this.MessageContext });
+            return this.AppContext.sendMessage(this.MessageContext.key.remoteJid!, { text: message }, {quoted: this.MessageContext});
+        else return this.AppContext.sendMessage(this.MessageContext.key.remoteJid!, { ...message }, {quoted: this.MessageContext});
     }
 }

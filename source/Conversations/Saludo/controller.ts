@@ -9,7 +9,7 @@ export class Saludo extends Answer {
 
     async handler(ctx: Context): Promise<void> {  
         ctx.useMemo(ctx.phoneNumber, 'name', ctx.body)
-        await ctx.delayWithPresence('composing', 1, Kind.SECONDS)
+        await ctx.delayWithPresence('composing', 1)
         await ctx.reply(ctx.MemoText(ctx.phoneNumber, 'Holaaaa {name}!'));
         return;
     }
