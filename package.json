@@ -3,14 +3,16 @@
   "module": "source/index.ts",
   "type": "module",
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "concurrently": "^8.2.2"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "dev": "concurrently -n typescript-compilation,nodejs \"npx tsc -w\" \"node --watch dist/index.js\""
   },
   "dependencies": {
     "@whiskeysockets/baileys": "^6.6.0",

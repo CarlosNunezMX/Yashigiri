@@ -2,8 +2,21 @@
 An new and experimental Conversational Flow for Baileys bots, easy to use and
 attach to your bot.
 
-> Fill with your number in white list at `source/Conversation/index.ts` then use
-`npm build` and `npm start`
+## How to run it
+We need make a few steps before run the project
+```bash
+npm install # This is going to install the deps
+npm run build # This will compile the project to javascript
+npm start # Start the project
+```
+
+**Why build the project?** NodeJS hasn't typescript support, so we need to convert our typescript into javascript to be executed by NodeJS.
+
+### Development Enviroment
+You could use a development enviroment out-the-box, you only need to use one single command
+```bash
+npm run dev
+```
 
 ## Manager *class(Singlethon)*
 
