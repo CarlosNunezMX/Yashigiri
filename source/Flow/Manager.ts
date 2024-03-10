@@ -234,7 +234,7 @@ export class Manager {
         if (!_memo)
             _memo = new Map()
         const val = _memo.get(key);
-        if (!val && value) {
+        if (value) {
             _memo.set(key, value);
             this.Memo.set(jid, _memo);
             return value;
@@ -270,8 +270,9 @@ export class Manager {
             original: variable
         }))
 
+        const memoJin = this.Memo.get(jid);
         toReplaced.forEach(replace => {
-            let Data = this.Memo.get(jid)?.get(replace.token) ?? 'Indefinido';
+            let Data = memoJin?.get(replace.token) ?? 'Indefinido';
             message = message.replace(replace.original, Data);
         })
 
