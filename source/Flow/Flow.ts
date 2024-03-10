@@ -1,8 +1,8 @@
 import type { AnyMessageContent, BaileysEventMap, WASocket, WAMessage, proto } from "@whiskeysockets/baileys";
 import type { Context } from "./Context.js";
 
-export abstract class Answer {
-  handler<ContextType = Context>(ctx: ContextType): void | Promise<void> { };
+export abstract class Answer<ContextType = Context> {
+  handler(ctx: ContextType): void | Promise<void> { };
   waitForAnswer: boolean = false;
 }
 

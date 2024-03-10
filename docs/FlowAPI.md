@@ -49,6 +49,18 @@ GreetFlow.addAnswer(MyGreatAnswerHere)
 GreetFlow.addAnswer(["Oh, are you {feel}", "I hope that was a good answer"]);
 ```
 
+### Adding next flow.
+> **WARNING** - This method is untested, so I don't recommend you use it for production enviroments!
+
+Well the flow has been end, so you want to redirect to the user to another flow, I've the solution to your problem. You need to use the method `setNextFlow(flow)`
+
+```ts
+const MyAwesomeOtherFlow = new Flow();
+/** More code here **/
+MyAwesomeFlow.setNextFlow(MyAwesomeOtherFlow);
+```
+
+
 ## Attach to Manager
 When you've finished your ideal flow, you have need to add it to the Manager, so the method is `Manager->addFlow(flow);`. Here is an example
 ```ts
