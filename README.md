@@ -73,4 +73,4 @@ A small review for the API is here.
 + [**FlowAPI**](docs/FlowAPI.md) - The hearth of the project!
 + [**AnswerAPI**](docs/AnswerAPI.md) - Make your responses dynamic
 
-<center> More docs comming soon... <center>
+<center> More docs comming soon... | Happy Development <center>
