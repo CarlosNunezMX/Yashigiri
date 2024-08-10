@@ -1,5 +1,5 @@
 <center>
-    <img scr="https://github.com/user-attachments/assets/90a6470e-7534-463e-98db-04d15bd65cea" alt="Yashigiri Logo"/>
+    <img scr="https://www.github.com/CarlosNunezMX/Yashigiri/raw/main/docs/Yashigiri.png"/>
     <h1>Yashigiri - Conversational Flows</h1>
 </center>
 > Comming soon. **Functionality to module**
