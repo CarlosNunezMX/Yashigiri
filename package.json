@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "baileys": "^6.7.6"
-  }
+  },
   "scripts": {
     "build": "tsc",
     "postinstall": "tsc"
