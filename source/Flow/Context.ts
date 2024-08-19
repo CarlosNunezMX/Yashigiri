@@ -1,6 +1,7 @@
-import type { AnyMessageContent, Contact, MiscMessageGenerationOptions, WAMessage, WAPresence, WASocket, proto } from "@whiskeysockets/baileys";
+import type { AnyMessageContent, Contact, MiscMessageGenerationOptions, WAMessage, WAPresence, WASocket, proto } from "baileys";
 import { Manager } from "./Manager.js";
 import type { Flow } from "./Flow.js";
+import {Memo} from "./Memo.js";
 
 export enum Kind {
     SECONDS,
@@ -12,12 +13,14 @@ export class Context {
     protected AppContext: WASocket;
     protected FlowContext: Flow;
 
-    phoneNumber: string;
-    body: string;
-    SenderInfo: proto.Message.IContactMessage;
-    sendOtherContact: (jid: string, content: AnyMessageContent, options?: MiscMessageGenerationOptions | undefined) => Promise<proto.WebMessageInfo | undefined>;
+    public phoneNumber: string;
+    public body: string;
+    public SenderInfo: proto.Message.IContactMessage;
 
-    moveToStep: (jid: string, step: number) => void;
+    public sendOtherContact: (jid: string, content: AnyMessageContent, options?: MiscMessageGenerationOptions | undefined) => Promise<proto.WebMessageInfo | undefined>;
+    public useMemo = Memo.getInstance().useMemo;
+    public MemoText = Memo.getInstance().useMemoText;
+    public moveToStep: (jid: string, step: number) => void;
 
     constructor(messageContext: WAMessage, socket: WASocket, flowContext: Flow) {
         if (!socket)
@@ -33,13 +36,11 @@ export class Context {
         this.moveToStep = Manager.getInstance().moveToStep;
     }
 
-    MemoText = Manager.getInstance().useMemoText;
-
     moveToFlow = (flow: Flow) => {
         Manager.getInstance().sendToFlow(flow, this.MessageContext.key.remoteJid!);
     }
 
-    delay(time: number, kind?: Kind) {
+    delay(time: number, kind?: Kind): Promise<void> {
         return new Promise((res, rej) => {
             setTimeout(e => res(e), (() => {
                 if (!kind)
@@ -51,8 +52,6 @@ export class Context {
             })());
         })
     }
-
-    useMemo = Manager.getInstance().useMemo;
 
     delayWithPresence = async (presence: WAPresence = 'composing', time: number, kind?: Kind) => {
         await this.AppContext.sendPresenceUpdate(presence, this.MessageContext.key.remoteJid!)

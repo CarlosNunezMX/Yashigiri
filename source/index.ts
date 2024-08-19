@@ -1,10 +1,9 @@
 import "./Conversations/index.js"
 
-import makeWASocket, { DisconnectReason, useMultiFileAuthState, type WASocket } from '@whiskeysockets/baileys'
+import makeWASocket, { DisconnectReason, useMultiFileAuthState, type WASocket } from 'baileys'
 import { Boom } from '@hapi/boom'
-import log from '@whiskeysockets/baileys/lib/Utils/logger.js';
+import log from 'baileys/lib/Utils/logger.js';
 import { Manager } from './Flow/Manager.js';
-
 
 async function connectToWhatsApp() {
     const { state, saveCreds } = await useMultiFileAuthState('Auth');

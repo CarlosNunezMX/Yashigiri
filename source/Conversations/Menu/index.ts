@@ -8,4 +8,5 @@ export const MenuFlow = new Flow()
     .addAnswer(`Buenas tardes señor {name}, como lo puedo ayudar hoy?`)
     .addAnswer(OneLineMessage(["Contamos con", "1. Cafe helado", "2. Cafe con Leche", "3. Capuchino"]))
     .addAnswer(MenuController)
+    .setName("Menú")
     .setNextFlow(Final);

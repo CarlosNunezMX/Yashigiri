@@ -9,7 +9,7 @@ console.log("Installed flows");
 
 
 // Setting
-manager.useEventDisbler('conversation');
+manager.useEventDisabler('conversation');
 
 // Setting Flows
 manager.addFlow(FlowSaludo);

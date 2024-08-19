@@ -1,4 +1,4 @@
-import type { AnyMessageContent, BaileysEventMap, WASocket, WAMessage, proto } from "@whiskeysockets/baileys";
+import type { AnyMessageContent, BaileysEventMap, WASocket, WAMessage, proto } from "baileys";
 import type { Context } from "./Context.js";
 export abstract class Answer<ContextType = Context> {
   handler(ctx: ContextType): void | Promise<void> { };
@@ -19,10 +19,15 @@ export type Keyboard = {
 
 export class Flow {
   flowName: string = '';
+  public AreWeWaiting: boolean = false;
   public Keyboards: Keyboard[] = [];
   CurrentAnswer = 0;
   getCurrentAnswer() {
     return this.Answers[this.CurrentAnswer];
+  }
+  setName = (name: string): Flow => {
+    this.flowName = name;
+    return this;
   }
   skipToStep(step: number){
     if(!this.Answers[step])

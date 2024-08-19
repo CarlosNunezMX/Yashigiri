@@ -9,9 +9,8 @@ export const FlowSaludo = new Flow()
         mode: 'equals',
         sensitive: false
     })
-    .addAnswer('Hola, cual es tu nombre?')
+    .addAnswer('[TESTING] - Hola, cual es tu nombre?')
     .addAnswer(Saludo)
     .addAnswer("Será redirigido al menú...")
     .setNextFlow(MenuFlow)
-
-FlowSaludo.flowName = "Saludo"
+    .setName("Saludo");
