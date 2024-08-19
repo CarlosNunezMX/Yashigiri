@@ -2,16 +2,14 @@
     <img scr="https://www.github.com/CarlosNunezMX/Yashigiri/raw/main/docs/Yashigiri.png"/>
     <h1>Yashigiri - Conversational Flows</h1>
 </center>
-> Comming soon. **Functionality to module**
+
 An new and experimental Conversational Flow for Baileys bots, easy to use and
 attach to your bot.
 
-## How to run it
-We need make a few steps before run the project
+## Instalation
+> Comming soon to NPM, but by the moment run this
 ```bash
-npm install # This is going to install the deps
-npm run build # This will compile the project to javascript
-npm start # Start the project
+npm install --save github:CarlosNunezMX/Yashigiri
 ```
 
 **Why build the project?** NodeJS hasn't typescript support, so we need to convert our typescript into javascript to be executed by NodeJS.
