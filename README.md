@@ -12,14 +12,6 @@ attach to your bot.
 npm install --save github:CarlosNunezMX/Yashigiri
 ```
 
-**Why build the project?** NodeJS hasn't typescript support, so we need to convert our typescript into javascript to be executed by NodeJS.
-
-### Development Enviroment
-You could use a development enviroment out-the-box, you only need to use one single command
-```bash
-npm run dev
-```
-
 ## Manager *class(Singlethon)*
 
 ### Get the Instance
