@@ -1,23 +1,37 @@
 {
   "compilerOptions": {
+    // Enable latest features
     "lib": ["ESNext"],
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "NodeNext",
     "moduleDetection": "force",
     "jsx": "react-jsx",
     "allowJs": true,
+    "rootDir": "./source",
+    "outDir": "./dist",
 
-    /* Bundler mode */
-    "moduleResolution": "Node",
+    // Bundler mode
+    "moduleResolution": "NodeNext",
     "verbatimModuleSyntax": true,
-    "rootDir": "source",
-    "outDir": "dist",
 
-    /* Linting */
-    "skipLibCheck": true,
+    // Best practices
     "strict": true,
+    "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true,
-    "sourceMap": true
+
+    // Some stricter flags (disabled by default)
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "declaration": true,
+    "declarationDir": "./types"
+  },
+  "include": ["source"],
+  "exclude": ["test/*", "dist/*"],
+  "typedocOptions": {
+    "entryPoints": [
+      "source/*.ts" // <--- take everything from this location
+    ],
+    "out": "docs/typedoc" // <--- output directory
   }
 }

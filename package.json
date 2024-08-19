@@ -1,22 +1,29 @@
 {
-  "name": "newflow",
-  "module": "source/index.ts",
+  "name": "@carlosnunezmx/yashigiri",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
   "type": "module",
+  "description": "A module to handle conversation flows with Baileys API",
+  "homepage": "https://github.com/CarlosNunezMX/Yashigiri",
+  "author": {
+    "email": "carlitosnu41@gmail.com",
+    "name": "Carlos Nuñez",
+    "url": "https://carlosnunezmx.tech"
+  },
   "devDependencies": {
     "@types/bun": "latest",
-    "concurrently": "^8.2.2"
+    "baileys": "^6.7.6"
+  },
+  "bugs": {
+    "email": "carlitosnu41@gmail.com",
+    "url": "https://github.com/CarlosNunezMX/Yashigiri/issues"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "start:bun": "bun ./source/index.ts",
     "build": "tsc",
-    "start": "bun dist/index.js",
-    "dev": "concurrently -n typescript-compilation,un \"npx tsc -w\" \"bun --watch dist/index.js\""
-  },
-  "dependencies": {
-    "baileys": "^6.7.6",
-    "qrcode-terminal": "^0.12.0"
+    "postinstall": "tsc"
   }
 }

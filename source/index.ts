@@ -1,39 +1,12 @@
-import "./Conversations/index.js"
+import {Manager} from "./Flow/Manager.js";
+export {Manager};
+export {Flow, type Keyboard} from "./Flow/Flow.js";
+export {Answer} from "./Flow/Answer.js";
+export {Memo} from "./Flow/Memo.js";
+export {Context} from "./Flow/Context.js";
+export {Analyzer} from "./Flow/Analyzer.js"
+export {WhiteList, BlackList} from "./Flow/Lists.js";
+export { OneLineMessage } from "./Flow/utils/OneLineMessage.js"
+export type {Database} from "./Flow/Database.js";
 
-import makeWASocket, { DisconnectReason, useMultiFileAuthState, type WASocket } from 'baileys'
-import { Boom } from '@hapi/boom'
-import log from 'baileys/lib/Utils/logger.js';
-import { Manager } from './Flow/Manager.js';
-
-async function connectToWhatsApp() {
-    const { state, saveCreds } = await useMultiFileAuthState('Auth');
-    // @ts-ignore
-    const sock: WASocket = makeWASocket.default({
-        // can provide additional config here
-        printQRInTerminal: true,
-        auth: state,
-        syncFullHistory: false,
-        // @ts-ignore
-        logger: log.default.child({})
-    });
-
-    sock.ev.on('connection.update', (update) => {
-        const { connection, lastDisconnect } = update
-        if (connection === 'close') {
-            const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut
-            console.log('connection closed due to ', lastDisconnect?.error, ', reconnecting ', shouldReconnect)
-            // reconnect if not logged out
-            if (shouldReconnect) {
-                connectToWhatsApp()
-            }
-        } else if (connection === 'open') {
-            console.log('opened connection')
-            Manager.getInstance().attach(sock);
-        }
-    })
-    sock.ev.on('creds.update', async (creds) => {
-        await saveCreds();
-    })
-}
-// run in main file
-connectToWhatsApp()
+export default Manager.getInstance();

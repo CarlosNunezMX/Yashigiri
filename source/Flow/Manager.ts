@@ -1,10 +1,11 @@
 import type { BaileysEventMap, WASocket, AnyMessageContent, WAMessage, proto } from "baileys";
-import { Answer, Flow, type AnswerConstructor } from "./Flow.js";
+import { Flow } from "./Flow.js";
+import { type AnswerConstructor, Answer } from "./Answer.js";
 import { Analyzer } from "./Analyzer.js";
 import { Context } from "./Context.js";
 import { BlackList, WhiteList } from "./Lists.js";
 import { Memo } from "./Memo.js";
-import type {Database} from "./Database";
+import type {Database} from "./Database.js";
 
 /**
  * You cant create an instance of this class, please
