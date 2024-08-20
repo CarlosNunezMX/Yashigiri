@@ -61,7 +61,10 @@ export class Manager {
 
     private haveReset = (jid: string, context: BaileysEventMap["messages.upsert"]) => {
         const flow = this.Flows.get(jid)!;
-        const haveNext = flow.getNext();
+	if(!flow){
+		return;
+	}
+	const haveNext = flow.getNext();
 
         if(!haveNext){
             if(!flow.nextFlow) {
