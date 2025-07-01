@@ -1,7 +1,7 @@
 {
   "name": "@carlosnunezmx/yashigiri",
-  "module": "dist/index.js",
-  "main": "dist/index.js",
+  "module": "source/index.ts",
+  "main": "source/index.ts",
   "types": "types/index.d.ts",
   "type": "module",
   "description": "A module to handle conversation flows with Baileys API",

@@ -1,7 +1,8 @@
-import type { AnyMessageContent, Contact, MiscMessageGenerationOptions, WAMessage, WAPresence, WASocket, proto } from "baileys";
+import { downloadMediaMessage, type AnyMessageContent, type Contact, type MiscMessageGenerationOptions, type WAMessage, type WAPresence, type WASocket, type proto } from "baileys";
 import { Manager } from "./Manager.js";
 import type { Flow } from "./Flow.js";
 import {Memo} from "./Memo.js";
+import {writeFileSync} from "node:fs"
 
 export enum Kind {
     SECONDS,
@@ -16,6 +17,7 @@ export class Context {
     public phoneNumber: string;
     public body: string;
     public SenderInfo: proto.Message.IContactMessage;
+    public RecivedFile?: proto.Message.DocumentMessage;
 
     public sendOtherContact: (jid: string, content: AnyMessageContent, options?: MiscMessageGenerationOptions | undefined) => Promise<proto.WebMessageInfo | undefined>;
     public useMemo = Memo.getInstance().useMemo;
@@ -34,15 +36,27 @@ export class Context {
         this.SenderInfo = this.MessageContext.message?.contactMessage!;
         this.FlowContext = flowContext;
         this.moveToStep = Manager.getInstance().moveToStep;
+
+        this.RecivedFile = this.MessageContext.message?.documentMessage as proto.Message.DocumentMessage;
     }
 
     moveToFlow = (flow: Flow) => {
         Manager.getInstance().sendToFlow(flow, this.MessageContext.key.remoteJid!);
     }
 
+    async downloadFile(path?: string): Promise<boolean | Buffer<ArrayBufferLike>>  {
+        if(!this.RecivedFile)
+            throw new Error("No hay archivos!");
+        const buff = await downloadMediaMessage(this.MessageContext, "buffer", {});
+        if(!path)
+            return buff; 
+        writeFileSync(path, buff); 
+        return true;
+    }
+
     delay(time: number, kind?: Kind): Promise<void> {
         return new Promise((res, rej) => {
-            setTimeout(e => res(e), (() => {
+            setTimeout(() => res(), (() => {
                 if (!kind)
                     return time * 1000;
                 if (kind == Kind.MINUTES)

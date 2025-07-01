@@ -1,4 +1,4 @@
-import type { Flow } from "./Flow";
+import type { Flow } from "./Flow.js";
 export declare class Database {
     getMemo<value>(jid: string, key?: string): Promise<value | null>;
     getMemo<rv>(jid: string): Promise<rv | null>;

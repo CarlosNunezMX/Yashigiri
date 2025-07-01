@@ -177,3 +177,6 @@ out
 
 # Finder (MacOS) folder config
 .DS_Store
+
+# Testing files
+test

@@ -135,10 +135,13 @@ export class Manager {
     }
 
     FlowNotFountMessage: string = "";
-
+    private _selectMessage(message: proto.IMessage){
+        return message.documentMessage || message.extendedTextMessage?.text || message.conversation;
+    }
     private getMessage = async (context: BaileysEventMap["messages.upsert"]) => {
         const cellPhone = context.messages[0].key.remoteJid!;
-        const message = context.messages[0].message?.extendedTextMessage?.text! || context.messages[0].message?.conversation!;
+        const message = this._selectMessage(context.messages[0].message!);
+    
         if (!this.someEvent(context.messages[0]))
             return;
 
@@ -155,8 +158,8 @@ export class Manager {
             return;
 
         // if the flow wasn't found we will create one with the analyzer class
-        if (!flow) {
-            const FlowFount = this.Analyzer.parse(message);
+        if (!flow && !(message as Required<proto.Message.DocumentMessage>).mimetype) {
+            const FlowFount = this.Analyzer.parse(message as string);
             if (!FlowFount && this.FlowNotFountMessage)
                 return this.SocketConnection?.sendMessage(cellPhone, { text: this.FlowNotFountMessage });
             if (!FlowFount)

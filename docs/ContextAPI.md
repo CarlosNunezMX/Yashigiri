@@ -18,6 +18,21 @@ Same up but with jid field
         message: string | AnyMessageContent = "Hola Mundo"
     );
 ```
+
+### downloadFile
+> **WARNING:** You need to handle exceptions manually 
+
+If you recived a file as message you could use it with this method
++ **Example**
+```ts
+    await ctx.downloadFile("myfile"); // Using myfile as path
+    const file = await ctx.downloadFile(); // Use if you will use the content.
+```
+
+#### RecivedFile
+File metadescription
+
+
 ### useMemo
 Make easy to use a RAM based memory for your chats, it supports multi-flow
 
@@ -116,3 +131,4 @@ You have your amazing context class made, so you need to attach to the manager f
 const manager = Manager.getInstance();
 manager.useContext(CustomAndCoolContext);
 ```
+

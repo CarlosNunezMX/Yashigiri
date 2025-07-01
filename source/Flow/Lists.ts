@@ -14,7 +14,6 @@ class Lists{
 export class BlackList extends Lists{};
 
 export class WhiteList extends Lists{
-
     get(jid: string): boolean{
         return !this.Lists.some(val => jid.includes(val));
     }

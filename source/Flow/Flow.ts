@@ -1,15 +1,13 @@
 import type { AnyMessageContent, BaileysEventMap, WASocket, WAMessage, proto } from "baileys";
 import type { Context } from "./Context.js";
-import type {AnswerConstructor} from "./Answer.js";
+import type { AnswerConstructor } from "./Answer.js";
 
-
-
-
-export type Keyboard = {
+export type TKeyboard = {
   key: string[] | string,
   mode?: "equals" | "contains",
   sensitive?: boolean
-} | string;
+}
+export type Keyboard = TKeyboard | string;
 
 export class Flow {
   flowName: string = '';
@@ -23,19 +21,19 @@ export class Flow {
     this.flowName = name;
     return this;
   }
-  skipToStep(step: number){
-    if(!this.Answers[step])
+  skipToStep(step: number) {
+    if (!this.Answers[step])
       return;
     this.CurrentAnswer = step;
   }
 
-  copy(){
+  copy() {
     return Object.assign<Flow, Flow>(Object.create(Object.getPrototypeOf(this)), this);
   }
 
   private Answers: Array<AnswerConstructor | string | AnyMessageContent> = [];
-  getNext(): (AnswerConstructor | string | AnyMessageContent) | undefined{
-    
+  getNext(): (AnswerConstructor | string | AnyMessageContent) | undefined {
+
     return this.Answers[this.CurrentAnswer + 1];
   }
   nextFlow?: Flow;
@@ -45,14 +43,14 @@ export class Flow {
    * @description By default if you use a string, the message will be proccessed in lowercase and in _contains_ mode
    * @description You have the `Keyboard` type where you could set the mode and if its case sensitive
    */
-  addKeyboard(keyboard: Keyboard | string[]): Flow{
+  addKeyboard(keyboard: Keyboard | string[]): Flow {
     if (typeof keyboard === "string") {
       this.Keyboards.push(keyboard.toLowerCase());
       return this;
     }
 
-    
-    if( Array.isArray(keyboard as string[]) ){
+
+    if (Array.isArray(keyboard as string[])) {
       this.Keyboards = this.Keyboards.concat(keyboard);
       return this;
     }
@@ -76,20 +74,20 @@ export class Flow {
   }
 
 
-  addAnswer (answer: AnswerConstructor | AnswerConstructor[] | string | string[] | AnyMessageContent | AnyMessageContent[]) {
+  addAnswer(answer: AnswerConstructor | AnswerConstructor[] | string | string[] | AnyMessageContent | AnyMessageContent[]) {
     if (!Array.isArray(answer))
       this.Answers.push(answer);
     else this.Answers = this.Answers.concat(answer);
-    
+
     return this;
   }
-  
+
   /**
    * 
    * @param flow The flow what you want to be the next when this finishes.
    * > **UNTESTED!** - Don't use it under production enviroment!
    */
-  setNextFlow  (flow: Flow) {
+  setNextFlow(flow: Flow) {
     this.nextFlow = flow;
     return this;
   }
