@@ -16,13 +16,13 @@ export class Context {
 
     public phoneNumber: string;
     public body: string;
-    public SenderInfo: proto.Message.IContactMessage;
+    public SenderInfo: proto.IMessageKey;
     public RecivedFile?: proto.Message.DocumentMessage;
 
     public sendOtherContact: (jid: string, content: AnyMessageContent, options?: MiscMessageGenerationOptions | undefined) => Promise<proto.WebMessageInfo | undefined>;
     public useMemo = Memo.getInstance().useMemo;
     public MemoText = Memo.getInstance().useMemoText;
-    public moveToStep: (jid: string, step: number) => void;
+    public moveToStep = (step: number) => Manager.getInstance().moveToStep(this.SenderInfo.remoteJid!, step) ;
 
     constructor(messageContext: WAMessage, socket: WASocket, flowContext: Flow) {
         if (!socket)
@@ -33,9 +33,9 @@ export class Context {
         this.sendOtherContact = this.AppContext.sendMessage.bind(this.AppContext);
         this.phoneNumber = messageContext.key.remoteJid!;
         this.body = messageContext.message?.extendedTextMessage?.text! || messageContext.message?.conversation!;
-        this.SenderInfo = this.MessageContext.message?.contactMessage!;
+        this.SenderInfo = this.MessageContext.key; 
+        console.log(this.MessageContext.message)
         this.FlowContext = flowContext;
-        this.moveToStep = Manager.getInstance().moveToStep;
 
         this.RecivedFile = this.MessageContext.message?.documentMessage as proto.Message.DocumentMessage;
     }

@@ -5,7 +5,7 @@ import { Analyzer } from "./Analyzer.js";
 import { Context } from "./Context.js";
 import { BlackList, WhiteList } from "./Lists.js";
 import { Memo } from "./Memo.js";
-import type {Database} from "./Database.js";
+import type { Database } from "./Database.js";
 
 /**
  * You cant create an instance of this class, please
@@ -14,20 +14,20 @@ import type {Database} from "./Database.js";
 
 export type WAMessageEvent = (keyof proto.IWebMessageInfo);
 export class Manager {
-    private database?: Database;
-    private BlackList?: BlackList;
-    private WhiteList?: WhiteList;
-    private delay: number = 1000;
-    private Memo: Memo = Memo.getInstance();
-    private ContextReference: typeof Context = Context;
-    private Analyzer = new Analyzer([]);
-    private events: Array<string | WAMessageEvent> = [];
+    protected database?: Database;
+    protected BlackList?: BlackList;
+    protected WhiteList?: WhiteList;
+    protected delay: number = 1000;
+    protected Memo: Memo = Memo.getInstance();
+    protected ContextReference: typeof Context = Context;
+    protected Analyzer = new Analyzer([]);
+    protected events: Array<string | WAMessageEvent> = [];
 
     public setDatabase(database: Database): void {
         this.database = database;
     }
 
-    public setDelay(ms: number){
+    public setDelay(ms: number) {
         this.delay = ms;
     }
 
@@ -40,7 +40,7 @@ export class Manager {
         this.ContextReference = newContext;
     }
 
-    private someEvent(Message: proto.IWebMessageInfo) {
+    protected someEvent(Message: proto.IWebMessageInfo) {
         const [event] = Object.keys(Message)[0];
         return this.events.some(ev => ev === event) || !Message.key.participant;
     }
@@ -59,15 +59,15 @@ export class Manager {
         return this;
     }
 
-    private haveReset = (jid: string, context: BaileysEventMap["messages.upsert"]) => {
+    protected haveReset = (jid: string, context: BaileysEventMap["messages.upsert"]) => {
         const flow = this.Flows.get(jid)!;
-	if(!flow){
-		return;
-	}
-	const haveNext = flow.getNext();
+        if (!flow) {
+            return;
+        }
+        const haveNext = flow.getNext();
 
-        if(!haveNext){
-            if(!flow.nextFlow) {
+        if (!haveNext) {
+            if (!flow.nextFlow) {
                 this.Memo.reset(jid);
                 return this.Flows.delete(jid);
             }
@@ -85,22 +85,22 @@ export class Manager {
         this.Flows.set(jid, flow);
     }
     SocketConnection: WASocket | undefined;
-    private Flows: Map<string, Flow> = new Map();
+    protected Flows: Map<string, Flow> = new Map();
     public attach = (whatsapp_context: WASocket) => {
         this.SocketConnection = whatsapp_context;
         this.SocketConnection.ev.on('messages.upsert', this.getMessage.bind(this));
     }
-    private async _delay(ms: number): Promise<void>{
+    protected async _delay(ms: number): Promise<void> {
         return new Promise((res, rej) => {
             setTimeout(() => res(), ms);
         })
     }
-    private async useDelay(jid: string){
+    protected async useDelay(jid: string) {
         await this.SocketConnection?.sendPresenceUpdate("composing", jid);
         await this._delay(this.delay);
         await this.SocketConnection?.sendPresenceUpdate('available', jid)
     }
-    private reset = (jid: string) => {
+    protected reset = (jid: string) => {
         const flow = this.Flows.get(jid);
         console.log("Check if reset...");
 
@@ -135,13 +135,13 @@ export class Manager {
     }
 
     FlowNotFountMessage: string = "";
-    private _selectMessage(message: proto.IMessage){
+    protected _selectMessage(message: proto.IMessage) {
         return message.documentMessage || message.extendedTextMessage?.text || message.conversation;
     }
-    private getMessage = async (context: BaileysEventMap["messages.upsert"]) => {
+    protected getMessage = async (context: BaileysEventMap["messages.upsert"]) => {
         const cellPhone = context.messages[0].key.remoteJid!;
         const message = this._selectMessage(context.messages[0].message!);
-    
+
         if (!this.someEvent(context.messages[0]))
             return;
 
@@ -177,7 +177,7 @@ export class Manager {
 
 
     // TODO: implement what to do when flow gets on its end.
-    private FlowQueue = async (context: BaileysEventMap["messages.upsert"]): Promise<void> => {
+    protected FlowQueue = async (context: BaileysEventMap["messages.upsert"]): Promise<void> => {
         const jid = context.messages[0].key.remoteJid!;
         const flow = this.Flows.get(jid)!;
         const CurrentAnswer = flow.getCurrentAnswer();
@@ -201,7 +201,7 @@ export class Manager {
                 return;
             }
 
-            if (nanswer.waitForAnswer && flow.AreWeWaiting) {
+            if ((nanswer.waitForAnswer && flow.AreWeWaiting) ||  !nanswer.waitForAnswer) {
                 const response = nanswer.handler(new this.ContextReference(
                     context.messages[0],
                     // @ts-ignore
@@ -209,34 +209,13 @@ export class Manager {
                     // this is the flow instance :D
                     flow
                 ));
-                if (response instanceof Promise) {
-                    return response.then(() => {
-                        flow.AreWeWaiting = false;
-                        this.Flows.set(jid, flow)
-                        this.haveReset(jid, context);
-                    })
-                }
+                if (response instanceof Promise)
+                    await response;
 
                 flow.AreWeWaiting = false;
                 this.Flows.set(jid, flow);
                 this.haveReset(jid, context);
             }
-
-            if (!nanswer.waitForAnswer) {
-                const response = nanswer.handler(new this.ContextReference(
-                    context.messages[0],
-                    // @ts-ignore
-                    this.SocketConnection,
-
-                    flow
-                ));
-                if (response instanceof Promise) {
-                    await response.then()
-                }
-
-                this.haveReset(jid, context);
-            }
-
         }
 
         if (typeof CurrentAnswer === "object") {
@@ -248,7 +227,7 @@ export class Manager {
 
     }
 
-    private static Instance: Manager | undefined;
+    protected static Instance: Manager | undefined;
     public static getInstance() {
         if (!this.Instance)
             this.Instance = new Manager();

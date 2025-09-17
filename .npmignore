@@ -3,4 +3,4 @@ dist
 docs
 node_modules
 bun.lockb
-Test
+test
