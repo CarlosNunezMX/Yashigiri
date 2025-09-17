@@ -3,7 +3,7 @@
     // Enable latest features
     "lib": ["ESNext", "dom"],
     "target": "ESNext",
-    "module": "NodeNext",
+    "module": "esnext",
     "moduleDetection": "force",
     "jsx": "react-jsx",
     "allowJs": true,
@@ -11,7 +11,7 @@
     "outDir": "./dist",
 
     // Bundler mode
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
 
     // Best practices
@@ -28,10 +28,4 @@
   },
   "include": ["source"],
   "exclude": ["test/*", "dist/*"],
-  "typedocOptions": {
-    "entryPoints": [
-      "source/*.ts" // <--- take everything from this location
-    ],
-    "out": "docs/typedoc" // <--- output directory
-  }
 }

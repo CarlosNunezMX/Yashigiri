@@ -1,7 +1,11 @@
 <center>
-    <img scr="https://www.github.com/CarlosNunezMX/Yashigiri/raw/main/docs/Yashigiri.png"/>
+    <img scr="./docs/Yashigiri.png"/>
     <h1>Yashigiri - Conversational Flows</h1>
 </center>
+
+> Documentation is deprecated for this branch
+## Experimental disclaimer
+Don't use it in production, there is not widely tested
 
 An new and experimental Conversational Flow for Baileys bots, easy to use and
 attach to your bot.

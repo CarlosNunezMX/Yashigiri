@@ -11,6 +11,10 @@
     "name": "Carlos Nuñez",
     "url": "https://carlosnunezmx.tech"
   },
+  "exports": {
+    "./core": "./source/core/index.ts",
+    ".": "./source/index.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
